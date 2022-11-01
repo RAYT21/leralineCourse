@@ -139,12 +139,12 @@ class Window:
         if (self.firewall_place_result['text'] == 'Проверка не проводилась'):
             self.result_output += "2. Тестирование межсетевого экрана не проводилось\n"
         else:
-            if (self.firewall_place_result['text'] == 'Установлен'):
+            if (self.firewall_place_result['text'] == 'Межсетевой экран DrWeb установлен!'):
                 self.result_output += "2. Межсетевой экран DrWeb установлен, "
                 if (self.firewall_status_result['text'] == 'Тестирование не проводилось'):
                     self.result_output += "но тестирование его работоспособности не проводилось\n"
                 else:
-                    if (self.firewall_status_result['text'] == 'Работает'):
+                    if (self.firewall_status_result['text'] == 'Межсетевой экран DrWeb функционирует!'):
                         self.result_output += "верно функционирует\n"
                     else:
                         self.result_output += "но функционирует неверно, или вообще не фукционирует\n"
