@@ -1,7 +1,6 @@
-from tkinter import *
 import os
 import socket
-import fileinput
+from tkinter import *
 from tkinter.filedialog import asksaveasfile
 
 
@@ -63,7 +62,7 @@ class Window:
         try:
             sock = socket.create_connection(("www.google.com", 80))
             if sock is not None:
-                sock.close
+                sock.close()
             self.internet_result.config(text='Данный компьютер подключен к интернету!', fg='green')
             return
         except OSError:
@@ -125,7 +124,7 @@ class Window:
                 text='Монитор DrWeb не функционирует, или функционирует неправильно!', fg='red')
 
     def result_painting_click(self):
-
+        self.result_output = ''
         self.result_output = 'Результаты проведенного тестирования:\n'
         # internet
         if (self.internet_result['text'] == 'Проверка не проводилась'):
@@ -178,13 +177,13 @@ class Window:
         list = self.result_output.split('\n')
         for i in list:
             self.result_painting_result.insert(END, i)
-        self.result_output = ''
+
 
     def result_file_click(self):
         f = asksaveasfile(mode='w', defaultextension=".txt")
         if f is None:
             return
-        text2save = str(self.result_painting_result)
+        text2save = str(self.result_output)
         f.write(text2save)
         f.close()
 
