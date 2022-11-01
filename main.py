@@ -130,12 +130,37 @@ class Window:
     def result_painting_click(self):
         self.result_painting_result = 'Результаты проведенного тестирования антивируса и фаервола\n'
         if (self.internet_result != 'Проверка не проводилась'):
-            self.result_painting_result = "1. Тестирование  "
+            self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+        else:
+            if (self.internet_result == 'Работает'):
+                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            else:
+                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+
+        if (self.firewall_place_result != 'Проверка не проводилась'):
+            self.result_painting_result += "2. Тестирование межсетевого экрана не проводилось\n"
+        else:
+            if (self.firewall_place_result == 'Работает'):
+                self.result_painting_result += "2. Тестирование интернет соединения не проводилось\n"
+                if(self.firewall_status_result):
+                    self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            else:
+                self.result_painting_result += "2. Межсетевой экран не установлен\n"
+
+        if (self.internet_result != 'Проверка не проводилась'):
+            self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+        else:
+            if (self.internet_result == 'Работает'):
+                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            else:
+                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+
+
 
 
     def result_file_click(self):
         f = asksaveasfile(mode='w', defaultextension=".txt")
-        if f is None:  
+        if f is None:
             return
         text2save = str(self.result_painting_result)
         f.write(text2save)
