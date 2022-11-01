@@ -8,6 +8,7 @@ from tkinter.filedialog import asksaveasfile
 class Window:
 
     def __init__(self):
+        self.result_output = None
         self.root = Tk()
         self.root.title('Программа проверки информационной безопасности')
         self.root.geometry('600x400')
@@ -58,16 +59,11 @@ class Window:
 
         self.root.mainloop()
 
-
     def internet_connection_click(self):
-        print('123')
         try:
-            print(231)
             sock = socket.create_connection(("www.google.com", 80))
             if sock is not None:
-                print(231)
                 sock.close
-            print(231)
             self.internet_result.config(text='Данный компьютер подключен к интернету!', fg='green')
             return
         except OSError:
@@ -98,7 +94,8 @@ class Window:
         if (flag):
             self.firewall_status_result.config(text='Межсетевой экран DrWeb функционирует!', fg='green')
         else:
-            self.firewall_status_result.config(text='Межсетевой экран функционирует неверно, или не функционирует вовсе!', fg='red')
+            self.firewall_status_result.config(
+                text='Межсетевой экран функционирует неверно, или не функционирует вовсе!', fg='red')
 
     def antivirus_install_click(self):
         lst = os.popen('drweb-ctl -v').read()
@@ -122,41 +119,66 @@ class Window:
                 flag = True
                 break
         if (flag):
-            self.antivirus_status_result.config(text='Антивирус DrWeb функционирует!', fg='green')
+            self.antivirus_status_result.config(text='Монитор DrWeb функционирует!', fg='green')
         else:
             self.antivirus_status_result.config(
-                text='Антивирус DrWeb не функционирует, или функционирует неправильно!', fg='red')
+                text='Монитор DrWeb не функционирует, или функционирует неправильно!', fg='red')
 
     def result_painting_click(self):
-        self.result_painting_result = 'Результаты проведенного тестирования антивируса и фаервола\n'
-        if (self.internet_result != 'Проверка не проводилась'):
-            self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+
+        self.result_output = 'Результаты проведенного тестирования:\n'
+        # internet
+        if (self.internet_result['text'] == 'Проверка не проводилась'):
+            self.result_output += "1. Тестирование подключения к интернету не проводилось\n"
         else:
-            if (self.internet_result == 'Работает'):
-                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            if (self.internet_result['text'] == 'Данный компьютер подключен к интернету!'):
+                self.result_output += "1. Данный компьютер подключен к интернету\n"
             else:
-                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+                self.result_output += "1. Данный компьютер не подключен к интернету\n"
+        # firewall
 
-        if (self.firewall_place_result != 'Проверка не проводилась'):
-            self.result_painting_result += "2. Тестирование межсетевого экрана не проводилось\n"
+        if (self.firewall_place_result['text'] == 'Проверка не проводилась'):
+            self.result_output += "2. Тестирование межсетевого экрана не проводилось\n"
         else:
-            if (self.firewall_place_result == 'Работает'):
-                self.result_painting_result += "2. Тестирование интернет соединения не проводилось\n"
-                if(self.firewall_status_result):
-                    self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            if (self.firewall_place_result['text'] == 'Установлен'):
+                self.result_output += "2. Межсетевой экран DrWeb установлен, "
+                if (self.firewall_status_result['text'] == 'Тестирование не проводилось'):
+                    self.result_output += "но тестирование его работоспособности не проводилось\n"
+                else:
+                    if (self.firewall_status_result['text'] == 'Работает'):
+                        self.result_output += "верно функционирует\n"
+                    else:
+                        self.result_output += "но функционирует неверно, или вообще не фукционирует\n"
             else:
-                self.result_painting_result += "2. Межсетевой экран не установлен\n"
+                self.result_output += "2. Межсетевой экран DrWeb не установлен\n"
 
-        if (self.internet_result != 'Проверка не проводилась'):
-            self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+        # antivirus(скопировать фаервольный вывод, просто поменять поля (конечно же после того, как поправить  выводы))
+        if (self.antivirus_place_result['text'] == 'Проверка не проводилась'):
+            self.result_output += "3. Тестирование антивирусного ПО не проводилось\n"
         else:
-            if (self.internet_result == 'Работает'):
-                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+            if (self.antivirus_place_result['text'] == 'Антивирус DrWeb установлен!'):
+                self.result_output += "3. Антивирус DrWeb установлен, "
+                if (self.antivirus_status_result['text'] == 'Тестирование не проводилось'):
+                    self.result_output += "но тестирование работоспособности монитора не проводилось\n"
+                else:
+                    if (self.antivirus_status_result['text'] == 'Монитор DrWeb функционирует!'):
+                        self.result_output += "монитор верно функционирует\n"
+                    else:
+                        self.result_output += "но монитор функционирует неверно, или вообще не фукционирует\n"
             else:
-                self.result_painting_result += "1. Тестирование интернет соединения не проводилось\n"
+                self.result_output += "3. Антивирус DrWeb не установлен\n"
 
-
-
+        self.internet_result.config(text='Проверка не проводилась', fg='black')
+        self.firewall_status_result.config(text='Проверка не проводилась', fg='black')
+        self.firewall_place_result.config(text='Проверка не проводилась', fg='black')
+        self.antivirus_status_result.config(text='Проверка не проводилась', fg='black')
+        self.antivirus_place_result.config(text='Проверка не проводилась', fg='black')
+        self.result_painting_result.delete(0, END)
+        print(self.result_output)
+        list = self.result_output.split('\n')
+        for i in list:
+            self.result_painting_result.insert(END, i)
+        self.result_output = ''
 
     def result_file_click(self):
         f = asksaveasfile(mode='w', defaultextension=".txt")
