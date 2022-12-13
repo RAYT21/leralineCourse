@@ -2,7 +2,8 @@ import os
 import socket
 from tkinter import *
 from tkinter.filedialog import asksaveasfile
-
+import re
+import time
 
 class Window:
 
@@ -70,28 +71,36 @@ class Window:
         self.internet_result.config(text='Данный компьютер не подключен к интернету', fg='red')
 
     def firewall_install_click(self):
-        lst = os.popen('drweb-ctl -v').read()
+        lst = os.popen('firewall-cmd --version').read()
         lst = lst.split('\n')
         flag = False
         for i in range(0, len(lst)):
-            if (lst[i] == 'drweb-ctl 11.1.9.2103151924'):
+            if (re.search(r'\d.\d.\d',lst[i])):
                 flag = True
                 break
         if (flag):
-            self.firewall_place_result.config(text='Межсетевой экран DrWeb установлен', fg='green')
+            self.firewall_place_result.config(text='Межсетевой экран Firewalld установлен', fg='green')
         else:
-            self.firewall_place_result.config(text='Межсетевой экран DrWeb не установлен', fg='red')
+            self.firewall_place_result.config(text='Межсетевой экран Firewalld не установлен', fg='red')
 
     def firewall_work_click(self):
-        lst = os.popen('ps -aux | grep [d]rweb').read()
-        lst = lst.split('\n')
+        #добавляем правило на блокировку доступа к сайту
+        os.popen('firewall-cmd --add-rich-rule="rule family=\'ipv4\' source address=\'172.217.17.238\' reject"; firewall-cmd --reload')
+        # пингуем его
+        time.sleep(10)
         flag = False
-        for i in range(0, len(lst)):
-            if (lst[i].__contains__('drweb-firewall')):
-                flag = True
-                break
+        try:
+            sock = socket.create_connection(("www.google.com", 80))
+            if sock is not None:
+                sock.close()
+            flag = True
+        except OSError:
+            pass
+        # убираем настройку
+        os.popen('firewall-cmd --remove-rich-rule="rule family=\'ipv4\' source address=\'172.217.17.238\' reject"; firewall-cmd --reload')
+        time.sleep(4)
         if (flag):
-            self.firewall_status_result.config(text='Межсетевой экран DrWeb функционирует', fg='green')
+            self.firewall_status_result.config(text='Межсетевой экран Firewalld функционирует', fg='green')
         else:
             self.firewall_status_result.config(
                 text='Межсетевой экран функционирует неверно, или не функционирует вовсе', fg='red')
